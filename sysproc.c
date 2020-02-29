@@ -14,6 +14,16 @@ sys_fork(void)
 }
 
 int
+sys_clone(void)
+{
+  void (*fcn)();
+  void *stack;
+  argptr(0,(void*)&fcn, sizeof(void*));
+  argptr(1,(void*)&stack, sizeof(void*));
+  return clone(fcn, stack);
+}
+
+int
 sys_exit(void)
 {
   exit();

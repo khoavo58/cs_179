@@ -3,18 +3,17 @@
 
 void test_fcn()
 {
-  int counter;
+
   int i;
   for(i=0 ;i<10; i++){
-    counter += i;
-    printf(1,"%d",counter);
+    printf(1,"%d", i);
   }
   exit();
 }
 
 int main(int argc, const char* argv[]){
 
-  thread_create(&test_fnc);
+  thread_create(&test_fcn);
   printf(1,"success");
   exit();
   

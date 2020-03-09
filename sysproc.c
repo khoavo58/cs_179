@@ -13,6 +13,13 @@ sys_fork(void)
   return fork();
 }
 
+//kernel thread info
+//int
+//sys_ktinfo(void)
+//{
+  //return ktinfo();
+//}
+
 int
 sys_clone(void)
 {

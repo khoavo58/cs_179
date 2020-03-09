@@ -599,3 +599,8 @@ clone(void(*fcn)(), void *stack){//takes a void function for now
 
   return pid;
 }
+
+// kernal thread information
+void ktinfo(void){
+
+}

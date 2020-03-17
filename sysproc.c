@@ -38,6 +38,12 @@ sys_exit(void)
 }
 
 int
+sys_ktinfo(void)
+{
+  return myproc()->pid;
+}
+
+int
 sys_wait(void)
 {
   return wait();

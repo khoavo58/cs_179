@@ -112,3 +112,27 @@ int thread_create(void (*start_routine)()){
   return creturn;
 }
 
+int join_thread(){
+  join();
+  return 1;
+}
+
+
+int lock_create(thread_lock *tloc)
+{
+  tloc->lock = 0;
+  return 1;
+}
+
+void lock_set(thread_lock *tloc)
+{
+    
+    while(tloc->lock != 0){}
+    tloc->lock = 1;
+    
+}
+
+void lock_release(thread_lock *tloc)
+{
+    tloc->lock = 0;
+}

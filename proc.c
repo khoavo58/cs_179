@@ -624,13 +624,17 @@ int join(void)
       if(p->pgdir != curproc->pgdir)
         //looking for procs that have matching pgdir
         continue;
+      if(p->parent != curproc)
+        //looking for procs that have matching pgdir
+        havekids = 1;
+        continue;  
       if(p->state != ZOMBIE)
         //only looking for zombies
-        continue;  
-      havekids = 1;
+        continue; 
+         
+      
       if(p->state == ZOMBIE){
         // Found one.
-        curproc->thread_count--;
         pid = p->pid;
         //add p->tid
         kfree(p->kstack);

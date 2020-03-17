@@ -12,9 +12,9 @@ void test_fcn()
   
   for(i=0 ;i<10; i++){
     //lock
-    lock_set(loc);
+    //lock_set(loc);
     printf(1,"%d",i);
-    lock_release(loc);
+    //lock_release(loc);
     //unlock
     //join_thread();
   }
@@ -25,10 +25,12 @@ int main(int argc, const char* argv[]){
 
   lock_create(loc);
   thread_create(&test_fcn);
+  thread_create(&test_fcn);
   //user__kernel_thread_info();
   //user_display_lock(true, tid);
   //join_thread();
-  //join_thread();
+  join_thread();
+  join_thread();
   printf(1,"success");
   
   exit();

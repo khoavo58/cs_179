@@ -630,6 +630,7 @@ int join(void)
       havekids = 1;
       if(p->state == ZOMBIE){
         // Found one.
+        curproc->thread_count--;
         pid = p->pid;
         //add p->tid
         kfree(p->kstack);

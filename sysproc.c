@@ -21,6 +21,12 @@ sys_fork(void)
 //}
 
 int
+sys_join(void)
+{
+  return join();
+}
+
+int
 sys_clone(void)
 {
   void (*fcn)();

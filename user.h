@@ -25,6 +25,7 @@ int sleep(int);
 int uptime(void);
 int clone(void(*fcn)(), void*);
 int ktinfo(void);
+int join(void);
 
 // ulib.c
 

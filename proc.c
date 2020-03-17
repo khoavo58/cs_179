@@ -111,6 +111,7 @@ found:
   p->context = (struct context*)sp;
   memset(p->context, 0, sizeof *p->context);
   p->context->eip = (uint)forkret;
+  p->thread_count = 0;                                  //init thread_count
 
   return p;
 }
@@ -284,7 +285,7 @@ wait(void)
       if(p->parent != curproc)
         continue;
       havekids = 1;
-      if(p->state == ZOMBIE){
+      if(p->state == ZOMBIE  && p->thread_count == 0){              //added and t_c == 0
         // Found one.
         pid = p->pid;
         kfree(p->kstack);
@@ -596,11 +597,16 @@ clone(void(*fcn)(), void *stack){//takes a void function for now
   np->state = RUNNABLE;
 
   release(&ptable.lock);
+  
+  curproc->thread_count++;                        //increment thread count
+  np->thread_count = curproc->thread_count;
 
   return pid;
 }
 
 // kernal thread information
 void ktinfo(void){
-
+  struct proc *p = myproc();
+  cprintf("Thread count is:", p->thread_count, "\n");
+  cprintf("Current PID:", p->pid, "\n");
 }

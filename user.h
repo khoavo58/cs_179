@@ -27,6 +27,11 @@ int clone(void(*fcn)(), void*);
 int ktinfo(void);
 
 // ulib.c
+
+typedef struct _thread_lock{
+  int lock;
+} thread_lock;
+
 int stat(const char*, struct stat*);
 char* strcpy(char*, const char*);
 void *memmove(void*, const void*, int);

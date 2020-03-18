@@ -125,8 +125,11 @@ void lock_create(thread_lock *tloc)
 
 void lock_set(thread_lock *tloc)
 {
-    
-    while(xchg(&tloc->locked, 1));        //spin lock using x86 xchg to set lock as 1
+    //spin lock using x86 xchg to check process' current lock state
+    while(1){
+      if(xchg(&tloc->locked, 1) == 0)
+      break;
+    }        
     
 }
 

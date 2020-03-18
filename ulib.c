@@ -118,21 +118,19 @@ int join_thread(){
 }
 
 
-int lock_create(thread_lock *tloc)
+void lock_create(thread_lock *tloc)
 {
-  tloc->lock = 0;
-  return 1;
+  tloc->locked = 0;                //craete lock and set to 0
 }
 
 void lock_set(thread_lock *tloc)
 {
     
-    while(tloc->lock != 0){}
-    tloc->lock = 1;
+    while(xchg(&tloc->locked, 1));        //spin lock using x86 xchg to set lock as 1
     
 }
 
 void lock_release(thread_lock *tloc)
 {
-    tloc->lock = 0;
+    tloc->locked = 0;                            //release lock and set to 0
 }

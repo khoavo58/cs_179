@@ -632,14 +632,14 @@ int join(void)
         //only looking for zombies
         continue; 
          
-      
+       
       if(p->state == ZOMBIE){
         // Found one.
         pid = p->pid;
         //add p->tid
         kfree(p->kstack);
         p->kstack = 0;
-        freevm(p->pgdir);
+        //freevm(p->pgdir);
         p->pid = 0;
         p->parent = 0;
         p->name[0] = 0;

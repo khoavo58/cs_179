@@ -1,5 +1,8 @@
 struct stat;
 struct rtcdate;
+typedef struct __thread_lock {
+  uint locked;
+} thread_lock;
 
 // system calls
 int fork(void);
@@ -29,10 +32,6 @@ int join(void);
 
 // ulib.c
 
-typedef struct _thread_lock{
-  int lock;
-} thread_lock;
-
 int stat(const char*, struct stat*);
 char* strcpy(char*, const char*);
 void *memmove(void*, const void*, int);
@@ -45,4 +44,11 @@ void* memset(void*, int, uint);
 void* malloc(uint);
 void free(void*);
 int atoi(const char*);
+
+//locks
+void lock_create(thread_lock *lock);
+void lock_set(thread_lock *lock);
+void lock_release(thread_lock *lock);
+
+
 int thread_create(void(*start_routine)());

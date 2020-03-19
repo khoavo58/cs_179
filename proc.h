@@ -52,9 +52,10 @@ struct proc {
   char name[16];               // Process name (debugging)
   
   //added variables
-  int thread_count;             
-
-  
+  int thread_count;
+  void* stack;                 //stack pointer  
+  int check_thread            //check to see if it is a thread
+  int free_stack              //to free stack
 };
 
 // Process memory is laid out contiguously, low addresses first:

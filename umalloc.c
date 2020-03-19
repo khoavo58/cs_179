@@ -5,6 +5,7 @@
 
 // Memory allocator by Kernighan and Ritchie,
 // The C programming Language, 2nd ed.  Section 8.7.
+#define PGSIZE (4096)
 
 typedef long Align;
 
@@ -87,4 +88,34 @@ malloc(uint nbytes)
       if((p = morecore(nunits)) == 0)
         return 0;
   }
+}
+
+int thread_create(void (*start_routine)(void*), void *arg){  
+  int s_addr;                                     //temp stack address
+  
+  void *stack = malloc(PGSIZE);
+  
+  //make sure stack is aligned
+  if((uint)stack % PGSIZE != 0) {
+    free(stack);
+    stack = malloc(2 * PGSIZE);
+    s_addr = (uint)stack;
+    stack = stack + (PGSIZE - (uint)stack % PGSIZE);    //allocates the difference
+  }
+  else {
+    s_addr = (uint)stack;
+  }
+  
+  ((uint*)stack)[0] = s_addr;
+  int creturn = clone(start_routine, arg, stack);
+  return creturn;
+}
+
+int join_thread(){
+
+  void *stack = NULL;
+  int pid = join(&stack);
+  free(stack);
+  
+  return pid;
 }

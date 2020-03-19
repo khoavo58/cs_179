@@ -545,7 +545,7 @@ clone(void(*fcn)(void*),void *arg, void *stack){//takes a void function for now
   uint sp;                               //stack pointer
   
   // Check if stack < 1 page
-  if((proc->sz - (uint)stack) < PGSIZE) {
+  if((curproc->sz - (uint)stack) < PGSIZE) {
     return -1;
   }
   

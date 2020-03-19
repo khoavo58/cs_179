@@ -23,17 +23,29 @@ sys_fork(void)
 int
 sys_join(void)
 {
-  return join();
+  void **stack = NULL;
+  
+  if (argptr(0, (void*)&stack, sizeof(void**)) < 0)
+    return -1;
+
+  return join(stack);
 }
 
 int
 sys_clone(void)
 {
-  void (*fcn)();
+  void (*fcn)(void*);
   void *stack;
-  argptr(0,(void*)&fcn, sizeof(void*));
-  argptr(1,(void*)&stack, sizeof(void*));
-  return clone(fcn, stack);
+  void *arg
+  
+  if (argptr(0, (void*)&fcn, sizeof(void*)) < 0)
+    return -1;
+  if (argptr(1, (void*)&arg, sizeof(void*)) < 0)
+    return -1;
+  if (argptr(2, (void*)&stack, sizeof(void*)) < 0)
+    return -1;
+
+  return clone(fcn, arg, stack);
 }
 
 int

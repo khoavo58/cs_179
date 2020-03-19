@@ -535,13 +535,24 @@ procdump(void)
 }
 
 int
-clone(void(*fcn)(), void *stack){//takes a void function for now
+clone(void(*fcn)(void*),void *arg, void *stack){//takes a void function for now
 //we can add more arguments later, but for now a void is fine
 
   int i, pid;
   struct proc *np;
   struct proc *curproc = myproc();
-  //struct of proc must not necessarily be equivlanet of myproc();
+  uint user_stack[2];                    //for args
+  uint sp;                               //stack pointer
+  
+  // Check if stack < 1 page
+  if((proc->sz - (uint)stack) < PGSIZE) {
+    return -1;
+  }
+  
+  //check if stack is page aligned
+  if(((uint)stack % PGSIZE) != 0) {
+    return -1;
+  }
 
   // Allocate process.
   if((np = allocproc()) == 0){
@@ -555,26 +566,34 @@ clone(void(*fcn)(), void *stack){//takes a void function for now
     np->state = UNUSED;
     return -1;
   }
-  np->pgdir = curproc->pgdir;
-  np->sz = curproc->sz;
-  np->parent = curproc;
+  
+  np->stack = stack;
+  np->check_thread = 1;           //for checking if it is a thread in join()
+  
+  //check if clone is called without thread_create then set stack to be released in join
+  if(((uint*)stack)[0] == 0){
+    np->free_stack = (uint)stack;
+  }
+  else{
+    np->free_stack = ((uint*)stack)[0];
+  }
+  
+  np->pgdir = curproc->pgdir;            //thread has same addr space as proc
+  np->sz = (uint)stack + PGSIZE;          //stack is one page
+  np->parent = curproc;                   //set curproc as parent
   *np->tf = *curproc->tf;
   
-  //SET UP STACK
-  np->ustack = (uint)stack;
-  np->tf->esp = (uint)stack+PGSIZE;
-  np->tf->eax = 0;
-  
-  uint user_stack[2];
+  //SET UP THREAD STACK
   user_stack[0] = 0xffffffff; //fake return address
-  //we can pass more arguements here, but I don't think this is necessary
-  //this feature can be added later
+  user_stack[1] = (uint)arg;  //store arg
+  sp = (uint)stack+PGSIZE;
+  sp -= 2 * sizeof(uint);
   
-  copyout(np->pgdir, np->ustack, user_stack, 4);
+  if(copyout(np->pgdir, sp, user_stack, 2*sizeof(uint)) < 0)
+    return -1;
   
-  //readjust pointer
-  np->tf->esp -= (1)*4; //multiple can be changed if we choose to pass more arguements into stack
-  
+  //Set thread's stack pointer to the stack
+  np->tf->esp = sp;
   
   // Clear %eax so that fork returns 0 in the child.
   np->tf->eax = 0;
@@ -610,7 +629,9 @@ void ktinfo(void){
   cprintf("Thread count is:", p->thread_count, "\n");
   cprintf("Current PID:", p->pid, "\n");
 }
-int join(void)
+
+int 
+join(void** stack)
 {
   struct proc *p;
   int havekids, pid;
@@ -626,13 +647,12 @@ int join(void)
         continue;
       if(p->parent != curproc)
         //looking for procs that have matching pgdir
-        havekids = 1;
         continue;  
-      if(p->state != ZOMBIE)
-        //only looking for zombies
+      if(!p->check_thread)
+        //looking for child that is a thread
         continue; 
          
-       
+      havekids = 1;
       if(p->state == ZOMBIE){
         // Found one.
         pid = p->pid;
@@ -645,6 +665,7 @@ int join(void)
         p->name[0] = 0;
         p->killed = 0;
         p->state = UNUSED;
+        *stack = (void*)p->free_stack;   //deallocate stack stack
         release(&ptable.lock);
         return pid;
       }

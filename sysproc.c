@@ -36,9 +36,9 @@ sys_clone(void)
 {
   void (*fcn)(void*);
   void *stack;
-  void *arg
+  void *arg;
   
-  if (argptr(0, (void*)&fcn, sizeof(void*)) < 0)
+  if(argptr(0, (void*)&fcn, sizeof(void*)) < 0)
     return -1;
   if (argptr(1, (void*)&arg, sizeof(void*)) < 0)
     return -1;

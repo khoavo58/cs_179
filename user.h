@@ -1,8 +1,7 @@
+#ifndef _USER_H_
+#define _USER_H_
+
 struct stat;
-struct rtcdate;
-typedef struct __thread_lock {
-  uint locked;
-} thread_lock;
 
 // system calls
 int fork(void);
@@ -26,9 +25,9 @@ int getpid(void);
 char* sbrk(int);
 int sleep(int);
 int uptime(void);
-int clone(void(*fcn)(), void*);
+int clone(void(*fcn)(void*), void *arg, void *stack);
 int ktinfo(void);
-int join(void);
+int join(void **stack);
 
 // ulib.c
 
@@ -50,5 +49,8 @@ void lock_create(thread_lock *lock);
 void lock_set(thread_lock *lock);
 void lock_release(thread_lock *lock);
 
+//threads
+int thread_create(void(*start_routine)(void*), void *arg);
+int thread_join();
 
-int thread_create(void(*start_routine)());
+#endif // _USER_H_

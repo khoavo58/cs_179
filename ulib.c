@@ -4,6 +4,7 @@
 #include "user.h"
 #include "x86.h"
 #include "mmu.h"
+#include "umalloc.c"
 
 char*
 strcpy(char *s, const char *t)
@@ -106,15 +107,34 @@ memmove(void *vdst, const void *vsrc, int n)
   return vdst;
 }
 
-int thread_create(void (*start_routine)()){  
+int thread_create(void (*start_routine)(void*), void *arg){  
+  int s_addr;                                     //temp stack address
+  
   void *stack = malloc(PGSIZE);
+  
+  //make sure stack is aligned
+  if((uint)stack % PGSIZE != 0) {
+    free(stack);
+    stack = malloc(2 * PGSIZE);
+    s_addr = (uint)stack;
+    stack = stack + (PGSIZE - (uint)stack % PGSIZE);    //allocates the difference
+  }
+  else {
+    s_addr = (uint)stack;
+  }
+  
+  ((uint*)stack)[0] = s_addr;
   int creturn = clone(start_routine, stack);
   return creturn;
 }
 
 int join_thread(){
-  join();
-  return 1;
+
+  void *stack = NULL;
+  int pid = join(&stack);
+  free(stack);
+  
+  return pid;
 }
 
 

@@ -102,7 +102,7 @@ int main(int argc, const char* argv[]){
    printf(1, "Joined : %d\n\n", join_pid);
 
    printf(1, "COUNT : %d\n", COUNT);
-   assert(COUNT == 6);
+   assert(COUNT == 18000);
 
    printf(1, "TEST PASSED\n");
    exit();

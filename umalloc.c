@@ -111,7 +111,7 @@ int thread_create(void (*start_routine)(void*), void *arg){
   return creturn;
 }
 
-int join_thread(){
+int thread_join(){
 
   void *stack = NULL;
   int pid = join(&stack);

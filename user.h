@@ -1,5 +1,7 @@
+#ifndef _USER_H_
+#define _USER_H_
+
 struct stat;
-struct rtcdate;
 
 // system calls
 int fork(void);
@@ -23,8 +25,12 @@ int getpid(void);
 char* sbrk(int);
 int sleep(int);
 int uptime(void);
+int clone(void(*fcn)(void*), void *arg, void *stack);
+int ktinfo(void);
+int join(void **stack);
 
 // ulib.c
+
 int stat(const char*, struct stat*);
 char* strcpy(char*, const char*);
 void *memmove(void*, const void*, int);
@@ -37,3 +43,14 @@ void* memset(void*, int, uint);
 void* malloc(uint);
 void free(void*);
 int atoi(const char*);
+
+//locks
+void lock_create(thread_lock *lock);
+void lock_set(thread_lock *lock);
+void lock_release(thread_lock *lock);
+
+//threads
+int thread_create(void(*start_routine)(void*), void *arg);
+int thread_join();
+
+#endif // _USER_H_

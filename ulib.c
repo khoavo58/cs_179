@@ -3,6 +3,8 @@
 #include "fcntl.h"
 #include "user.h"
 #include "x86.h"
+//#include "mmu.h"
+//#include "umalloc.c"
 
 char*
 strcpy(char *s, const char *t)
@@ -103,4 +105,27 @@ memmove(void *vdst, const void *vsrc, int n)
   while(n-- > 0)
     *dst++ = *src++;
   return vdst;
+}
+
+
+
+
+void lock_create(thread_lock *tloc)
+{
+  tloc->locked = 0;                //craete lock and set to 0
+}
+
+void lock_set(thread_lock *tloc)
+{
+    //spin lock using x86 xchg to check process' current lock state
+    while(1){
+      if(xchg(&tloc->locked, 1) == 0)
+      break;
+    }        
+    
+}
+
+void lock_release(thread_lock *tloc)
+{
+    tloc->locked = 0;                            //release lock and set to 0
 }

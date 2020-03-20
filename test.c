@@ -9,7 +9,7 @@ void test_fcn2(void *arg_ptr);
 int ppid;
 int COUNT = 0;
 //lock struct
-thread_lock* locked;
+thread_lock locked;
 
 //assert definition
 #define assert(x) if (x) {} else { \

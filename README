@@ -1,48 +1,37 @@
-xv6 is a re-implementation of Dennis Ritchie's and Ken Thompson's Unix
-Version 6 (v6).  xv6 loosely follows the structure and style of v6,
-but is implemented for a modern x86-based multiprocessor using ANSI C.
+This project extends XV6 by implementing kernel level threads and user functions to streamline their use. This document will go over how a user can use this new functionality, and what is occuring when certain functions are called. 
 
-ACKNOWLEDGMENTS
+A user would begin using these features by first declaring a function they wish to run with multiple threads. In the main of their project they will call int thread_create(void (*start_routine)(void*), void *arg), the first argument would contain a pointer to the function they desire to run, the second accepts a single argument to be passed in said function. The thread_create function then allocates and checks that memory for the thread stack is properly in place and then calls int clone(void(*fcn)(void*),void *arg, void *stack), which takes the original two arguments from thread_create, and the newly allocated stack pointer. The clone function is closely related to fork and is responsible for creating a new process with its own independent stack but points to pgdir shared by all related threads. 
+    
+The second user feature that was implemented were spin locks. These are here to allow the user to dictate which zones in their 
+code will be considered critical areas by threads and will only be allowed to be accessed by one thread at a time. Three 
+different user functions, and a structure definition were added in order to create this functionality: 
 
-xv6 is inspired by John Lions's Commentary on UNIX 6th Edition (Peer
-to Peer Communications; ISBN: 1-57398-013-7; 1st edition (June 14,
-2000)). See also https://pdos.csail.mit.edu/6.828/, which
-provides pointers to on-line resources for v6.
+    lock_create(thread_lock *tloc)
+    lock_set(thread_lock *tloc)
+    lock_release(thread_lock *tloc)
 
-xv6 borrows code from the following sources:
-    JOS (asm.h, elf.h, mmu.h, bootasm.S, ide.c, console.c, and others)
-    Plan 9 (entryother.S, mp.h, mp.c, lapic.c)
-    FreeBSD (ioapic.c)
-    NetBSD (console.c)
+    typedef struct _thread_lock {
+		uint locked; 
+    } thread_lock;
 
-The following people have made contributions: Russ Cox (context switching,
-locking), Cliff Frey (MP), Xiao Yu (MP), Nickolai Zeldovich, and Austin
-Clements.
+In order to use the spin lock feature a user must first globally declare a thread_lock structure, and then 
+lock_create(user created lock structure) in their main, prior to thread_create. Once this is in place the user can add 
+thread_set and thread_release in the function they wish to thread in the areas they deem appropriate. 
 
-We are also grateful for the bug reports and patches contributed by Silas
-Boyd-Wickizer, Anton Burtsev, Cody Cutler, Mike CAT, Tej Chajed, eyalz800,
-Nelson Elhage, Saar Ettinger, Alice Ferrazzi, Nathaniel Filardo, Peter
-Froehlich, Yakir Goaron,Shivam Handa, Bryan Henry, Jim Huang, Alexander
-Kapshuk, Anders Kaseorg, kehao95, Wolfgang Keller, Eddie Kohler, Austin
-Liew, Imbar Marinescu, Yandong Mao, Matan Shabtay, Hitoshi Mitake, Carmi
-Merimovich, Mark Morrissey, mtasm, Joel Nider, Greg Price, Ayan Shafqat,
-Eldar Sehayek, Yongming Shen, Cam Tenny, tyfkda, Rafael Ubal, Warren
-Toomey, Stephen Tu, Pablo Ventura, Xi Wang, Keiichi Watanabe, Nicolas
-Wolovick, wxdao, Grant Wu, Jindong Zhang, Icenowy Zheng, and Zou Chang Wei.
+Finally, the final user function added was int thread_join(), this function calls join() which returns the pid of a completed 
+thread and returns it in order to clear the stack. A thread_join() must be called at the end of main for each thread initially
+created or else you may end up with a zombie process. 
 
-The code in the files that constitute xv6 is
-Copyright 2006-2018 Frans Kaashoek, Robert Morris, and Russ Cox.
+To run the program:
 
-ERROR REPORTS
+you will need a Virtual Machine running Linux, and install Qemu. The following link has more in depth details in doing so.
+https://www.cs.ucr.edu/~csong/cs153/19f/xv6.html
 
-We switched our focus to xv6 on RISC-V; see the mit-pdos/xv6-riscv.git
-repository on github.com.
+Once you have linux and qemu installed.
 
-BUILDING AND RUNNING XV6
+When you cd into your desired directory type the following into your command line
 
-To build xv6 on an x86 ELF machine (like Linux or FreeBSD), run
-"make". On non-x86 or non-ELF machines (like OS X, even on x86), you
-will need to install a cross-compiler gcc suite capable of producing
-x86 ELF binaries (see https://pdos.csail.mit.edu/6.828/).
-Then run "make TOOLPREFIX=i386-jos-elf-". Now install the QEMU PC
-simulator and run "make qemu".
+Git clone https://github.com/khoavo58/cs_179.git
+
+~Cd cs_179
+~make qemu

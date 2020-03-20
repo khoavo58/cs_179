@@ -26,7 +26,7 @@ int main(int argc, const char* argv[]){
    ppid = getpid();
    lock_create(&locked);
 
-   int arg = 35;
+   int arg = 25;
   
     //create 10 threads
    int thread_pid1 = thread_create(test_fcn, &arg);
@@ -114,9 +114,9 @@ void
 test_fcn(void *arg_ptr) {
    int i;
    int arg = *(int*)arg_ptr;
-   assert(arg == 35);
+   assert(arg == 25);
 
-   for(i = 0; i < 1000000; i++) {
+   for(i = 0; i < 1000; i++) {
      lock_set(&locked);
      COUNT = COUNT + 2;
      lock_release(&locked);
@@ -129,7 +129,7 @@ test_fcn(void *arg_ptr) {
 void
 test_fcn2(void *arg_ptr) {
   int arg = *(int*)arg_ptr;
-  assert(arg == 35);
+  assert(arg == 25);
   
   while (COUNT < 1000);
   lock_set(&locked);

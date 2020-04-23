@@ -31,7 +31,7 @@ Once you have linux and qemu installed.
 
 When you cd into your desired directory type the following into your command line
 
-Git clone https://github.com/khoavo58/cs_179.git
+Git clone https://github.com/khoavo58/kernel-level-threading.git
 
 ~Cd cs_179
 ~make qemu
